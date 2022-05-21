@@ -12,11 +12,11 @@ fn main() -> std::io::Result<()> {
     // Fill content with header,
     let mut contents = format!("P3\n{width} {height}\n255\n");    
 
-    for u in 0..height {
+    for u in (0..height).rev() {
         for v in 0..width {
             // Get colors, range 0 .. 255
-            let red: u8 = ((u as f32 / (width as f32 - 1.0)) * 255.99) as u8;
-            let green: u8 = ((v as f32 / (height as f32 - 1.0)) * 255.99) as u8;
+            let red: u8 = ((v as f32 / (width as f32 - 1.0)) * 255.99) as u8;
+            let green: u8 = ((u as f32 / (height as f32 - 1.0)) * 255.99) as u8;
             let blue: u8 = (0.25 * 255.99) as u8;
 
             // Get formatted string to represent the color for this pixel
