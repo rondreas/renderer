@@ -28,12 +28,23 @@ impl Neg for Vec3 {
     }
 }
 
-impl AddAssign for Vec3 {
+// Overloading implementations for different types, here we impl for both Vec3 and f32
+impl AddAssign<Vec3> for Vec3 {
     fn add_assign(&mut self, other: Self) {
         *self = Self {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
+        };
+    }
+}
+
+impl AddAssign<f32> for Vec3 {
+    fn add_assign(&mut self, other: f32) {
+        *self = Self {
+            x: self.x + other,
+            y: self.y + other,
+            z: self.z + other,
         };
     }
 }
@@ -58,14 +69,13 @@ impl DivAssign for Vec3 {
     }
 }
 
-// Isn't this dot() ?
-trait LengthSquared {
-    fn length_squared(&self) -> f32;
+trait Dot {
+    fn dot(&self, other: &Self) -> f32;
 }
 
-impl LengthSquared for Vec3 {
-    fn length_squared(&self) -> f32 {
-        return self.x*self.x + self.y*self.y + self.z*self.z;
+impl Dot for Vec3 {
+    fn dot(&self, other: &Self) -> f32 {
+        return self.x * other.x + self.y * other.y + self.z * other.z;
     }
 }
 
@@ -76,7 +86,7 @@ trait Length {
 
 impl Length for Vec3 {
     fn length(&self) -> f32 {
-        return self.length_squared().sqrt();
+        return self.dot(self).sqrt();
     }
 }
 
@@ -140,11 +150,20 @@ mod tests {
     }
 
     #[test]
-    fn test_vec3_add_assign() {
+    fn test_vec3_add_assign_vec3() {
         let mut a = Vec3{x:1.0, y:2.0, z:3.0};
         let b = Vec3{x:1.0, y:1.0, z:1.0};
 
         a += b;
+
+        assert_eq!(a,Vec3{x: 2.0, y: 3.0, z: 4.0});
+    }
+
+    #[test]
+    fn test_vec3_add_assign_f32() {
+        let mut a = Vec3{x:1.0, y:2.0, z:3.0};
+
+        a += 1.0;
 
         assert_eq!(a,Vec3{x: 2.0, y: 3.0, z: 4.0});
     }
@@ -167,5 +186,15 @@ mod tests {
         a /= b;
 
         assert_eq!(a,Vec3{x: 0.5, y: 0.6666667, z: 3.75});
+    }
+
+    #[test]
+    fn test_vec3_dot() {
+        let a = Vec3{x: 1.0, y: 2.0, z: 3.0};
+        let b = Vec3{x: 2.0, y: 3.0, z: 4.0};
+
+        let dot_product = a.dot(&b);
+
+        assert_eq!(dot_product, 20.0);
     }
 }
