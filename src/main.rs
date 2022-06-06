@@ -3,8 +3,6 @@
 use std::fs::File;
 use std::io::prelude::*; // TODO: Figure out which actual imports we use from this,
 
-mod vector;
-
 fn main() -> std::io::Result<()> {
     // File::create will return a Result, if it raises an error, the error
     // will be returned by the whole function. So guess we will exit main
@@ -19,7 +17,7 @@ fn main() -> std::io::Result<()> {
     // error. Macro `eprint!` doesn't return num bytes so we will get the
     // length of a string to 'hack' how C would use:
     // `std::cerr << "\rfoo" << std::flush;`
-    let mut buffer_size = 0;
+    let mut buffer_size;
     
     // Fill content with header from formatted string.
     let mut contents = format!("P3\n{width} {height}\n255\n");
