@@ -1,3 +1,13 @@
+# don't include compiled binaries
 /target
-image.ppm
+
+# ignore the image output
+*.ppm
+
+# ignore mac os fluff
+.DS_STORE
+
+# ignore the ctags file
+tags
+
 Cargo.lock
