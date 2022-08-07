@@ -1,15 +1,13 @@
 // https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
-use std::fs::File;
 use std::io::prelude::*; // TODO: Figure out which actual imports we use from this,
+use std::io::BufWriter;
 
 fn main() -> std::io::Result<()> {
-    // File::create will return a Result, if it raises an error, the error
-    // will be returned by the whole function. So guess we will exit main
-    // and return the error if that happens.
-    let mut file = File::create("image.ppm")?;
+    let stdout = std::io::stdout();
+    let mut buffer = BufWriter::new(stdout.lock());
 
-    // Define size,
+    // Define size of resulting image,
     let width: u16 = 256;
     let height: u16 = 256;
 
@@ -19,8 +17,8 @@ fn main() -> std::io::Result<()> {
     // `std::cerr << "\rfoo" << std::flush;`
     let mut buffer_size;
     
-    // Fill content with header from formatted string.
-    let mut contents = format!("P3\n{width} {height}\n255\n");
+    // Write out the ppm header to stdout
+    write!(buffer, "P3\n{width} {height}\n255\n");
 
     // The render loop, we will iterate over the image from top to bottom,
     // then from left to right along the pixel row, row will be called a
@@ -38,14 +36,9 @@ fn main() -> std::io::Result<()> {
             let green: u8 = ((u as f32 / (height as f32 - 1.0)) * 255.99) as u8;
             let blue: u8 = (0.25 * 255.99) as u8;
 
-            // Get formatted string to represent the color for this pixel
-            let colors = format!("{red} {green} {blue}\n");
-            contents.push_str(&colors);
+            write!(buffer, "{red} {green} {blue}\n");
         }
     }
-
-    // Write contents to file,
-    write!(file, "{}", contents)?;
 
     eprint!("\nRender Finished\n");
 
