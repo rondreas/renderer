@@ -1,4 +1,3 @@
-
 use std::ops::{Neg, Add, AddAssign, Mul, MulAssign, Div, DivAssign};
 
 // Seems we can 'derive' and get some traits for free,
@@ -180,7 +179,6 @@ pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
 pub fn unit_vector(v: &Vec3) -> Vec3 {
     return *v / v.length();
 }
-
 
 #[cfg(test)]
 mod tests {

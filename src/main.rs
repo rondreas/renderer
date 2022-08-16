@@ -3,6 +3,9 @@
 use std::io::prelude::*; // TODO: Figure out which actual imports we use from this,
 use std::io::BufWriter;
 
+// Get the Color struct and function for printing colors,
+use renderer::color::*;
+
 fn main() -> std::io::Result<()> {
     let stdout = std::io::stdout();
     let mut buffer = BufWriter::new(stdout.lock());
@@ -31,12 +34,12 @@ fn main() -> std::io::Result<()> {
         eprint!("{:buffer_size$}", buf);
 
         for v in 0..width {
-            // Get colors, range 0 .. 255
-            let red: u8 = ((v as f32 / (width as f32 - 1.0)) * 255.99) as u8;
-            let green: u8 = ((u as f32 / (height as f32 - 1.0)) * 255.99) as u8;
-            let blue: u8 = (0.25 * 255.99) as u8;
-
-            write!(buffer, "{red} {green} {blue}\n");
+            let color = Color{
+                x: v as f32 / (width as f32 - 1.0),
+                y: u as f32 / (height as f32 - 1.0),
+                z: 0.25
+            };
+            write_color(buffer.get_mut(), &color);
         }
     }
 
