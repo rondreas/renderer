@@ -12,7 +12,19 @@ use renderer::ray::*;
 
 use Vec3 as Point3;
 
+fn hit_sphere(center: &Point3, radius: f32, ray: &Ray) -> bool {
+    let oc = ray.origin - *center;
+    let a = dot(&ray.direction, &ray.direction);
+    let b = 2.0 * dot(&oc, &ray.direction);
+    let c = dot(&oc, &oc) - radius*radius;
+    let discriminant = b*b - 4.0 * a * c;
+    return (discriminant > 0.0);
+}
+
 fn ray_color(ray: &Ray) -> Color {
+    if (hit_sphere(&Point3{x: 0.0, y: 0.0, z: -1.0}, 0.5, &ray)) {
+        return Color{x: 1.0, y: 0.0, z: 0.0};
+    }
     let direction = unit_vector(&ray.direction);
     let t = 0.5 * (direction.y + 1.0);
     return (1.0 - t) * Color{x: 1.0, y: 1.0, z: 1.0} + t * Color{x: 0.5, y: 0.7, z: 1.0};
