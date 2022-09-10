@@ -1,4 +1,4 @@
-use std::ops::{Neg, Add, AddAssign, Mul, MulAssign, Div, DivAssign};
+use std::ops::{Neg, Add, AddAssign, Sub, Mul, MulAssign, Div, DivAssign};
 
 // Seems we can 'derive' and get some traits for free,
 // Debug here is used for printing the Vec3 in formatting
@@ -82,6 +82,18 @@ impl AddAssign<f32> for Vec3 {
             y: self.y + other,
             z: self.z + other,
         };
+    }
+}
+
+impl Sub<Vec3> for Vec3 {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self {
+            x: &self.x - &other.x,
+            y: &self.y - &other.y,
+            z: &self.z - &other.z,
+        }
     }
 }
 
