@@ -1,4 +1,6 @@
 // https://raytracing.github.io/books/RayTracingInOneWeekend.html
+// To render an image, run 
+// cargo run > image.ppm
 
 use std::io::prelude::*; // TODO: Figure out which actual imports we use from this,
 use std::io::BufWriter;
@@ -43,6 +45,8 @@ fn main() -> std::io::Result<()> {
     // Write out the ppm header to stdout
     write!(buffer, "P3\n{width} {height}\n255\n");
 
+    buffer.flush().unwrap();
+
     // The render loop, we will iterate over the image from top to bottom,
     // then from left to right along the pixel row, row will be called a
     // "scanline" from now,
@@ -64,6 +68,8 @@ fn main() -> std::io::Result<()> {
     }
 
     eprint!("\nRender Finished\n");
+
+    buffer.flush().unwrap();
 
     Ok(())
 }
