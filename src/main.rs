@@ -13,7 +13,8 @@ use renderer::ray::*;
 use Vec3 as Point3;
 
 fn ray_color(ray: &Ray) -> Color {
-    let t = 0.5 * (ray.direction.y + 1.0);
+    let direction = unit_vector(&ray.direction);
+    let t = 0.5 * (direction.y + 1.0);
     return (1.0 - t) * Color{x: 1.0, y: 1.0, z: 1.0} + t * Color{x: 0.5, y: 0.7, z: 1.0};
 }
 
