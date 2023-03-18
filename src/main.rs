@@ -2,10 +2,9 @@
 // To render an image, run 
 // cargo run > image.ppm
 
-use std::io::prelude::*; // TODO: Figure out which actual imports we use from this,
+use std::io::prelude::*;
 use std::io::BufWriter;
 
-// Get the Color struct and function for printing colors,
 use renderer::vector::*;
 use renderer::color::*;
 use renderer::ray::*;
@@ -27,8 +26,8 @@ fn hit_sphere(center: &Point3, radius: f32, ray: &Ray) -> f32 {
 fn ray_color(ray: &Ray) -> Color {
     let t = hit_sphere(&Point3{x: 0.0, y: 0.0, z: -1.0}, 0.5, &ray);
     if t > 0.0 {
-        let N = unit_vector(&(ray.at(t) - Vec3{x:0.0, y:0.0, z:-1.0}));
-        return 0.5 * (N + 1.0);
+        let normal = unit_vector(&(ray.at(t) - Vec3{x:0.0, y:0.0, z:-1.0}));
+        return 0.5 * (normal + 1.0);
     }
     let direction = unit_vector(&ray.direction);
     let t = 0.5 * (direction.y + 1.0);
@@ -61,7 +60,7 @@ fn main() -> std::io::Result<()> {
     let mut buffer_size;
     
     // Write out the ppm header to stdout
-    write!(buffer, "P3\n{width} {height}\n255\n");
+    write!(buffer, "P3\n{width} {height}\n255\n").expect("Failed to write header...");
 
     buffer.flush().unwrap();
 
