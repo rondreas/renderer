@@ -165,10 +165,14 @@ impl Dot for Vec3 {
 
 // Can't find how to extend .len() so doing this,
 pub trait Length {
+    fn length_squared(&self) -> f32;
     fn length(&self) -> f32;
 }
 
 impl Length for Vec3 {
+    fn length_squared(&self) -> f32 {
+        return self.dot(self)
+    }
     fn length(&self) -> f32 {
         return self.dot(self).sqrt();
     }
