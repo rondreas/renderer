@@ -7,12 +7,8 @@ pub struct Ray {
     pub direction: Vec3,
 }
 
-pub trait At {
-    fn at(&self, t: f32) -> Vec3;
-}
-
-impl At for Ray {
-    fn at(&self, t: f32) -> Vec3 {
+impl Ray {
+    pub fn at(&self, t: f32) -> Vec3 {
         return self.origin + t * self.direction;
     }
 }
