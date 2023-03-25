@@ -1,4 +1,4 @@
-use std::io::{BufWriter, Write};
+use std::io::Write;
 pub use crate::vector::Vec3;
 
 // Make an alias for Color
@@ -7,5 +7,5 @@ pub use Vec3 as Color;
 
 // Write the translated [0, 255] value of each component
 pub fn write_color(mut writer: impl Write, color: &Color) {
-    write!(writer, "{} {} {}\n", (color.x * 255.99) as u8, (color.y * 255.99) as u8, (color.z * 255.99) as u8);
+    write!(writer, "{} {} {}\n", (color.x * 255.99) as u8, (color.y * 255.99) as u8, (color.z * 255.99) as u8).expect("We should be allowed to write");
 }
