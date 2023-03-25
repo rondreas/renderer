@@ -10,6 +10,12 @@ pub struct Vec3 {
     pub z: f32
 }
 
+impl Vec3 {
+    pub fn zero() -> Vec3 {
+        Vec3{x: 0.0, y: 0.0, z: 0.0}
+    }
+}
+
 // Implement operator traits,
 impl Neg for Vec3 {
     type Output = Self; // TODO: figure out this standard,
