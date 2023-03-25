@@ -2,9 +2,11 @@
 // To render an image, run
 // cargo run > image.ppm
 
+use rand::Rng;
 use std::io::prelude::*;
 use std::io::BufWriter;
 
+use renderer::camera::Camera;
 use renderer::color::*;
 use renderer::hittable::*;
 use renderer::hittable_list::*;
@@ -12,15 +14,13 @@ use renderer::ray::*;
 use renderer::sphere::*;
 use renderer::vector::*;
 
-use Vec3 as Point3;
-
 fn ray_color(ray: &Ray, world: &HittableList) -> Color {
     if let Some(hit) = world.hit(ray, 0.0, f32::INFINITY) {
         return 0.5 * (hit.normal + 1.0);
     }
     let direction = unit_vector(&ray.direction);
     let t = 0.5 * (direction.y + 1.0);
-    return (1.0 - t)
+    (1.0 - t)
         * Color {
             x: 1.0,
             y: 1.0,
@@ -30,7 +30,7 @@ fn ray_color(ray: &Ray, world: &HittableList) -> Color {
             x: 0.5,
             y: 0.7,
             z: 1.0,
-        };
+        }
 }
 
 fn main() -> std::io::Result<()> {
@@ -41,6 +41,7 @@ fn main() -> std::io::Result<()> {
     let aspect_ratio = 16.0 / 9.0;
     let width: u16 = 400;
     let height: u16 = (width as f32 / aspect_ratio) as u16;
+    let samples_per_pixel = 100;
 
     // World
     let mut world = HittableList { objects: vec![] };
@@ -62,33 +63,7 @@ fn main() -> std::io::Result<()> {
     }));
 
     // Camera
-    let viewport_height = 2.0;
-    let viewport_width = viewport_height * aspect_ratio;
-    let focal_length = 1.0;
-
-    let origin = Point3 {
-        x: 0.0,
-        y: 0.0,
-        z: 0.0,
-    };
-    let horizontal = Vec3 {
-        x: viewport_width,
-        y: 0.0,
-        z: 0.0,
-    };
-    let vertical = Vec3 {
-        x: 0.0,
-        y: viewport_height,
-        z: 0.0,
-    };
-    let lower_left_corner = origin
-        - horizontal / 2.0
-        - vertical / 2.0
-        - Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: focal_length,
-        };
+    let cam = Camera::new();
 
     // Create a variable to store the buffer size when printing to standard
     // error. Macro `eprint!` doesn't return num bytes so we will get the
@@ -101,6 +76,8 @@ fn main() -> std::io::Result<()> {
 
     buffer.flush().unwrap();
 
+    let mut rng = rand::thread_rng();
+
     // The render loop, we will iterate over the image from top to bottom,
     // then from left to right along the pixel row, row will be called a
     // "scanline" from now,
@@ -112,15 +89,15 @@ fn main() -> std::io::Result<()> {
         eprint!("{:buffer_size$}", buf);
 
         for i in 0..width {
-            let u = i as f32 / (width as f32 - 1.0);
-            let v = j as f32 / (height as f32 - 1.0);
+            let mut color = Color::zero();
 
-            let ray = Ray {
-                origin,
-                direction: lower_left_corner + u * horizontal + v * vertical - origin,
-            };
-            let pixel_color = ray_color(&ray, &world);
-            write_color(buffer.get_mut(), &pixel_color);
+            for _s in 0..samples_per_pixel {
+                let u = (i as f32 + rng.gen::<f32>()) / (width as f32 - 1.0);
+                let v = (j as f32 + rng.gen::<f32>()) / (height as f32 - 1.0);
+                let ray = cam.get_ray(u, v);
+                color += ray_color(&ray, &world);
+            }
+            write_color(buffer.get_mut(), &color, samples_per_pixel);
         }
     }
 
