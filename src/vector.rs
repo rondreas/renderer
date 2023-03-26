@@ -1,3 +1,4 @@
+use rand_distr::{Distribution, UnitSphere};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub};
 
 // Seems we can 'derive' and get some traits for free,
@@ -17,6 +18,16 @@ impl Vec3 {
             y: 0.0,
             z: 0.0,
         }
+    }
+}
+
+#[inline]
+pub fn random_in_unit_sphere() -> Vec3 {
+    let v: [f32; 3] = UnitSphere.sample(&mut rand::thread_rng());
+    Vec3 {
+        x: v[0],
+        y: v[1],
+        z: v[2],
     }
 }
 

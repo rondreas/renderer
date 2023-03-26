@@ -14,9 +14,21 @@ use renderer::ray::*;
 use renderer::sphere::*;
 use renderer::vector::*;
 
-fn ray_color(ray: &Ray, world: &HittableList) -> Color {
+fn ray_color(ray: &Ray, world: &HittableList, depth: i32) -> Color {
+    if depth <= 0 {
+        return Color::zero();
+    }
     if let Some(hit) = world.hit(ray, 0.0, f32::INFINITY) {
-        return 0.5 * (hit.normal + 1.0);
+        let target = hit.point + hit.normal + random_in_unit_sphere();
+        return 0.5
+            * ray_color(
+                &Ray {
+                    origin: hit.point,
+                    direction: target - hit.point,
+                },
+                world,
+                depth - 1,
+            );
     }
     let direction = unit_vector(&ray.direction);
     let t = 0.5 * (direction.y + 1.0);
@@ -42,6 +54,7 @@ fn main() -> std::io::Result<()> {
     let width: u16 = 400;
     let height: u16 = (width as f32 / aspect_ratio) as u16;
     let samples_per_pixel = 100;
+    let max_depth = 50;
 
     // World
     let mut world = HittableList { objects: vec![] };
@@ -95,7 +108,7 @@ fn main() -> std::io::Result<()> {
                 let u = (i as f32 + rng.gen::<f32>()) / (width as f32 - 1.0);
                 let v = (j as f32 + rng.gen::<f32>()) / (height as f32 - 1.0);
                 let ray = cam.get_ray(u, v);
-                color += ray_color(&ray, &world);
+                color += ray_color(&ray, &world, max_depth);
             }
             write_color(buffer.get_mut(), &color, samples_per_pixel);
         }
