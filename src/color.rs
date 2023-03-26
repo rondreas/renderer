@@ -11,9 +11,9 @@ pub fn write_color(mut writer: impl Write, color: &Color, num_samples: u16) {
     let mut b = color.z;
 
     let scale = 1.0 / f32::from(num_samples);
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = (scale * r).sqrt();
+    g = (scale * g).sqrt();
+    b = (scale * b).sqrt();
 
     writeln!(
         writer,
