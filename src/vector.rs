@@ -31,6 +31,10 @@ pub fn random_in_unit_sphere() -> Vec3 {
     }
 }
 
+pub fn random_unit_vector() -> Vec3 {
+    unit_vector(&random_in_unit_sphere())
+}
+
 // Implement operator traits,
 impl Neg for Vec3 {
     type Output = Self; // TODO: figure out this standard,
@@ -213,6 +217,7 @@ pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
     }
 }
 
+#[inline]
 pub fn unit_vector(v: &Vec3) -> Vec3 {
     *v / v.length()
 }
