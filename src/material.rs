@@ -1,13 +1,13 @@
 use crate::ray::Ray;
 use crate::color::Color;
 use crate::hittable::HitRecord;
-use crate::vector::{Vec3, random_unit_vector, dot};
+use crate::vector::{Vec3, random_unit_vector, unit_vector, reflect, dot};
 
 pub struct Lambertian {
     pub albedo: Color,
 }
 
-pub struct Metall {
+pub struct Metal {
     pub albedo: Color,
 }
 
@@ -28,11 +28,11 @@ impl Material for Lambertian {
     }
 }
 
-impl Material for Metall {
+impl Material for Metal {
     fn scatter(&self, in_ray: &Ray, hit: &HitRecord) -> Option<(Color, Ray)> {
-        let reflected: Vec3 = hit.normal + random_unit_vector();
+        let reflected: Vec3 = reflect(&unit_vector(&in_ray.direction), &hit.normal);
         let scattered = Ray{origin: hit.point, direction: reflected};
-        if dot(&reflected, &hit.normal) < 0.0 {
+        if dot(&reflected, &hit.normal) > 0.0 {
             return Some((self.albedo, scattered));
         }
         None

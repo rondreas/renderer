@@ -52,13 +52,16 @@ fn main() -> std::io::Result<()> {
     let aspect_ratio = 16.0 / 9.0;
     let width: u16 = 400;
     let height: u16 = (width as f32 / aspect_ratio) as u16;
-    let samples_per_pixel = 100;
-    let max_depth = 50;
+    let samples_per_pixel = 64;
+    let max_depth = 32;
 
     // World
     let mut world = HittableList { objects: vec![] };
     
-    let ground: Rc<Lambertian> = Rc::new(Lambertian{albedo: Color{x: 0.8, y: 0.8, z: 0.8}});
+    let mat_ground: Rc<Lambertian> = Rc::new(Lambertian{albedo: Color{x: 0.8, y: 0.8, z: 0.0}});
+    let mat_center: Rc<Lambertian> = Rc::new(Lambertian{albedo: Color{x: 0.7, y: 0.3, z: 0.3}});
+    let mat_left: Rc<Metal> = Rc::new(Metal{albedo: Color{x: 0.8, y: 0.8, z: 0.8}});
+    let mat_right: Rc<Metal> = Rc::new(Metal{albedo: Color{x: 0.8, y: 0.6, z: 0.2}});
 
     world.add(Box::new(Sphere {
         center: Vec3 {
@@ -67,7 +70,7 @@ fn main() -> std::io::Result<()> {
             z: -1.0,
         },
         radius: 0.5,
-        material: Rc::<Lambertian>::clone(&ground),
+        material: Rc::<Lambertian>::clone(&mat_center),
     }));
     world.add(Box::new(Sphere {
         center: Vec3 {
@@ -76,7 +79,25 @@ fn main() -> std::io::Result<()> {
             z: -1.0,
         },
         radius: 100.0,
-        material: Rc::<Lambertian>::clone(&ground),
+        material: Rc::<Lambertian>::clone(&mat_ground),
+    }));
+    world.add(Box::new(Sphere {
+        center: Vec3 {
+            x: -1.0,
+            y: 0.0,
+            z: -1.0,
+        },
+        radius: 0.5,
+        material: Rc::<Metal>::clone(&mat_left),
+    }));
+    world.add(Box::new(Sphere {
+        center: Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: -1.0,
+        },
+        radius: 0.5,
+        material: Rc::<Metal>::clone(&mat_right),
     }));
 
     // Camera
