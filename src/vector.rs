@@ -19,6 +19,14 @@ impl Vec3 {
             z: 0.0,
         }
     }
+
+    pub fn near_zero(&self) -> bool {
+        return self.x.abs() < f32::MIN_POSITIVE && self.y.abs() < f32::MIN_POSITIVE && self.z.abs() < f32::MIN_POSITIVE;
+    }
+}
+
+pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+    *v - 2.0 * dot(v,n) * *n
 }
 
 #[inline]
@@ -127,6 +135,30 @@ impl Sub<Vec3> for Vec3 {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,
+        }
+    }
+}
+
+impl Sub<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self - other.x,
+            y: self - other.y,
+            z: self - other.z,
+        }
+    }
+}
+
+impl Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
         }
     }
 }

@@ -5,6 +5,7 @@
 use rand::Rng;
 use std::io::prelude::*;
 use std::io::BufWriter;
+use std::rc::Rc;
 
 use renderer::camera::Camera;
 use renderer::color::*;
@@ -13,22 +14,20 @@ use renderer::hittable_list::*;
 use renderer::ray::*;
 use renderer::sphere::*;
 use renderer::vector::*;
+use renderer::material::*;
 
+// TODO: Don't do recursion
 fn ray_color(ray: &Ray, world: &HittableList, depth: i32) -> Color {
     if depth <= 0 {
         return Color::zero();
     }
     if let Some(hit) = world.hit(ray, 0.001, f32::INFINITY) {
-        let target = hit.point + hit.normal + random_in_hemisphere(&hit.normal);
-        return 0.5
-            * ray_color(
-                &Ray {
-                    origin: hit.point,
-                    direction: target - hit.point,
-                },
-                world,
-                depth - 1,
-            );
+        if let Some((albedo, scattered)) = hit.material.scatter(ray, &hit) {
+            return albedo * ray_color(&scattered, world, depth - 1);
+        }
+        else {
+            return Color::zero();
+        }
     }
     let direction = unit_vector(&ray.direction);
     let t = 0.5 * (direction.y + 1.0);
@@ -58,6 +57,9 @@ fn main() -> std::io::Result<()> {
 
     // World
     let mut world = HittableList { objects: vec![] };
+    
+    let ground: Rc<Lambertian> = Rc::new(Lambertian{albedo: Color{x: 0.8, y: 0.8, z: 0.8}});
+
     world.add(Box::new(Sphere {
         center: Vec3 {
             x: 0.0,
@@ -65,6 +67,7 @@ fn main() -> std::io::Result<()> {
             z: -1.0,
         },
         radius: 0.5,
+        material: Rc::<Lambertian>::clone(&ground),
     }));
     world.add(Box::new(Sphere {
         center: Vec3 {
@@ -73,6 +76,7 @@ fn main() -> std::io::Result<()> {
             z: -1.0,
         },
         radius: 100.0,
+        material: Rc::<Lambertian>::clone(&ground),
     }));
 
     // Camera

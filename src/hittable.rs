@@ -1,9 +1,12 @@
 use crate::ray::Ray;
-use crate::vector::*;
+use crate::vector::{Vec3, dot};
+use crate::material::Material;
+use std::rc::Rc;
 
 pub struct HitRecord {
     pub point: Vec3,
     pub normal: Vec3,
+    pub material: Rc<dyn Material>,
     pub t: f32,
     pub front_face: bool,
 }
