@@ -12,7 +12,9 @@ pub struct Metal {
     pub fuzz: f32,
 }
 
-pub struct Dielectrics {}
+pub struct Dielectric {
+    pub ior: f32, // Index of refraction
+}
 
 pub trait Material {
     fn scatter(&self, in_ray: &Ray, hit: &HitRecord) -> Option<(Color, Ray)>; 
@@ -37,5 +39,13 @@ impl Material for Metal {
             return Some((self.albedo, scattered));
         }
         None
+    }
+}
+
+impl Material for Dielectric {
+    fn scatter(&self, in_ray: &Ray, hit: &HitRecord) -> Option<(Color, Ray)> {
+        let refraction_ratio = if hit.front_face {1.0 / self.ior} else { self.ior };
+        let refracted = refract(&unit_vector(&in_ray.direction), &hit.normal, refraction_ratio);
+        Some((Color{x: 1.0, y: 1.0, z: 1.0}, Ray{origin: hit.point, direction: refracted}))
     }
 }
