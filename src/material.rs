@@ -1,7 +1,7 @@
 use crate::ray::Ray;
 use crate::color::Color;
 use crate::hittable::HitRecord;
-use crate::vector::{Vec3, random_unit_vector, unit_vector, reflect, dot};
+use crate::vector::*;
 
 pub struct Lambertian {
     pub albedo: Color,
@@ -9,6 +9,7 @@ pub struct Lambertian {
 
 pub struct Metal {
     pub albedo: Color,
+    pub fuzz: f32,
 }
 
 pub struct Dielectrics {}
@@ -31,7 +32,7 @@ impl Material for Lambertian {
 impl Material for Metal {
     fn scatter(&self, in_ray: &Ray, hit: &HitRecord) -> Option<(Color, Ray)> {
         let reflected: Vec3 = reflect(&unit_vector(&in_ray.direction), &hit.normal);
-        let scattered = Ray{origin: hit.point, direction: reflected};
+        let scattered = Ray{origin: hit.point, direction: reflected + self.fuzz*random_in_unit_sphere()};
         if dot(&reflected, &hit.normal) > 0.0 {
             return Some((self.albedo, scattered));
         }
