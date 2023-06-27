@@ -1,3 +1,6 @@
+use rand::prelude::*;
+use rand::distributions::Standard;
+
 use crate::ray::Ray;
 use crate::color::Color;
 use crate::hittable::HitRecord;
@@ -14,6 +17,15 @@ pub struct Metal {
 
 pub struct Dielectric {
     pub ior: f32, // Index of refraction
+}
+
+impl Dielectric {
+    // https://raytracing.github.io/books/RayTracingInOneWeekend.html#dielectrics/schlickapproximation
+    fn reflectance(cosine: f32, ref_idx: f32) -> f32 {
+        let r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+        let r0 = r0*r0;
+        return r0 * (1.0 - r0) * (1.0 - cosine).powf(5.0);
+    }
 }
 
 pub trait Material {
@@ -52,7 +64,8 @@ impl Material for Dielectric {
         let refraction_ratio = if hit.front_face {1.0 / self.ior} else { self.ior };
 
         // If we cannot refract,
-        if refraction_ratio * sin_theta > 1.0 {
+        let random_double = StdRng::from_entropy().sample(Standard);
+        if refraction_ratio * sin_theta > 1.0 || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double {
             let reflected = reflect(&unit_direction, &hit.normal);
             return Some((Color{x: 1.0, y: 1.0, z: 1.0}, Ray{origin: hit.point, direction: reflected}));
         }

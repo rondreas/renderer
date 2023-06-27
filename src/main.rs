@@ -81,6 +81,7 @@ fn main() -> std::io::Result<()> {
         radius: 0.5,
         material: Rc::<Lambertian>::clone(&mat_center),
     }));
+
     world.add(Box::new(Sphere {
         center: Vec3 {
             x: -1.0,
@@ -90,6 +91,16 @@ fn main() -> std::io::Result<()> {
         radius: 0.5,
         material: Rc::<Dielectric>::clone(&mat_left),
     }));
+    world.add(Box::new(Sphere {
+        center: Vec3 {
+            x: -1.0,
+            y: 0.0,
+            z: -1.0,
+        },
+        radius: -0.4,
+        material: Rc::<Dielectric>::clone(&mat_left),
+    }));
+
     world.add(Box::new(Sphere {
         center: Vec3 {
             x: 1.0,
