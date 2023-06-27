@@ -44,8 +44,20 @@ impl Material for Metal {
 
 impl Material for Dielectric {
     fn scatter(&self, in_ray: &Ray, hit: &HitRecord) -> Option<(Color, Ray)> {
+        let unit_direction = unit_vector(&in_ray.direction);
+
+        let cos_theta = dot(&-unit_direction, &hit.normal).min(1.0);
+        let sin_theta = (1.0 - cos_theta*cos_theta).sqrt();
+
         let refraction_ratio = if hit.front_face {1.0 / self.ior} else { self.ior };
-        let refracted = refract(&unit_vector(&in_ray.direction), &hit.normal, refraction_ratio);
+
+        // If we cannot refract,
+        if refraction_ratio * sin_theta > 1.0 {
+            let reflected = reflect(&unit_direction, &hit.normal);
+            return Some((Color{x: 1.0, y: 1.0, z: 1.0}, Ray{origin: hit.point, direction: reflected}));
+        }
+
+        let refracted = refract(&unit_direction, &hit.normal, refraction_ratio);
         Some((Color{x: 1.0, y: 1.0, z: 1.0}, Ray{origin: hit.point, direction: refracted}))
     }
 }

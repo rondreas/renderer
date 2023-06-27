@@ -59,9 +59,9 @@ fn main() -> std::io::Result<()> {
     let mut world = HittableList { objects: vec![] };
     
     let mat_ground: Rc<Lambertian> = Rc::new(Lambertian{albedo: Color{x: 0.8, y: 0.8, z: 0.0}});
-    let mat_center: Rc<Dielectric> = Rc::new(Dielectric{ior: 1.5});
+    let mat_center: Rc<Lambertian> = Rc::new(Lambertian{albedo: Color{x: 0.1, y: 0.2, z: 0.5}});
     let mat_left: Rc<Dielectric> = Rc::new(Dielectric{ior: 1.5});
-    let mat_right: Rc<Metal> = Rc::new(Metal{albedo: Color{x: 0.8, y: 0.6, z: 0.2}, fuzz: 1.0});
+    let mat_right: Rc<Metal> = Rc::new(Metal{albedo: Color{x: 0.8, y: 0.6, z: 0.2}, fuzz: 0.0});
 
     world.add(Box::new(Sphere {
         center: Vec3 {
@@ -79,7 +79,7 @@ fn main() -> std::io::Result<()> {
             z: -1.0,
         },
         radius: 0.5,
-        material: Rc::<Dielectric>::clone(&mat_center),
+        material: Rc::<Lambertian>::clone(&mat_center),
     }));
     world.add(Box::new(Sphere {
         center: Vec3 {
